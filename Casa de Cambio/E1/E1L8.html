@@ -101,16 +101,7 @@
             }
 
             fieldset{
-                display: inline;
-                width: 232px;
-                background-color: rgba(255, 255, 255, 0.699);  
-                border-color: black;
-                border-style: solid;        
-                border-radius: 10px;
-                padding-top: 5px;
-                padding-left: 2px;
-                padding-right: 2px;
-                padding-bottom: 10px;
+                border: 0px;
             }
 
             div{
@@ -121,7 +112,28 @@
                 margin: 5px;
                 margin-bottom: 15px;
             }
+
+            th, tr, thead, table {
+                border: 2px;
+                border-style: solid;
+                border-color: black;
+                padding: 5px;
+                background-color: rgba(255, 255, 255, 0.274);;
+            }
             
+            .clField{
+                display: inline;
+                width: 232px;
+                background-color: rgba(255, 255, 255, 0.699);  
+                border-color: black;
+                border-style: dotted;        
+                border-radius: 10px;
+                padding-top: 5px;
+                padding-left: 2px;
+                padding-right: 2px;
+                padding-bottom: 5px;
+            }
+
             .clOut{
                 display: block;
                 background-color: rgba(255, 255, 255, 0.842);
@@ -153,7 +165,7 @@
     </head>
     <body>
         <form action="">
-            <fieldset>
+            <fieldset class="clField">
                 <div><!--Lista de Seleção das Moedas Disponíveis-->
                     <label for="idMoeda">Selecione a Moeda:</label>
                     <select name="nmMoedas" id="idMoedas">
@@ -176,8 +188,21 @@
                 <div class="clBotoes" id="idBtConsulta">Consultar</div>
             </fieldset>
             <div><!--Saída do Resultado-->
-                <fieldset class="clFieldOut">
-                    <output id="idOut">Resultados</output>
+                <fieldset id="idFieldOut">
+                    <output id="idOut">
+                        <table id="idTable">
+                            <thead id="idTableHead">
+                                <tr class="clTrMoedasHead">
+                                    <th class="clThPariedadeComp">Pariedade de Compra</th>
+                                    <th class="clThPariedadeVend">Pariedade de Venda</th>
+                                    <th class="clThCotaçãoComp">Cotação de Compra</th>
+                                    <th class="clThCotaçãoVend">Cotação de Venda</th>
+                                    <th class="clThHoraCotação">Hora da Cotação</th>
+                                    <th class="clThTipoBoletim">Tipo de Boletim</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </output>
                 </fieldset>
             </div>    
         </form>
@@ -188,7 +213,11 @@
             var out = document.querySelector("#idOut")
             var btConsultar = document.querySelector("#idBtConsulta")
             var resultadoEmJS
-            var textoOut = "|| "
+            var moedasTr
+            var moedaTable = document.querySelector("#idTable")
+
+            //ocultação do campo de saída
+            out.hidden = true
 
             /**
             * Rotina de Consulta
@@ -201,40 +230,60 @@
                 moeda = String(document.querySelector("#idMoedas").value)
                 data = document.querySelector("#idData").value
 
-                var xhr = new XMLHttpRequest(); 
+                let xhr = new XMLHttpRequest(); 
 
                 xhr.open("GET", "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda='"+moeda+"'&@dataCotacao='"+data+"'&$top=100&$format=json&$select=paridadeCompra,paridadeVenda,cotacaoCompra,cotacaoVenda,dataHoraCotacao,tipoBoletim")
 
                 xhr.addEventListener("load", function(){
-                    var resultado = xhr.responseText;
+                    let resultado = xhr.responseText;
                     resultadoEmJS = JSON.parse(resultado)
-                    out.value = gerarOut(resultadoEmJS)
+                    gerarOut(resultadoEmJS)
                 })
                 
                 xhr.send()
+
+                //desocultação do campo de saída
+
+                out.hidden = false
+
+                document.querySelector("#idFieldOut").classList.add("clField")
             }
 
             /**
-            * Rotina de Ttexto de Saída
-            * Descrição: Geração do Texto de Saída
-            * Parâmetros: none
-            * Retorno: textoOut
+            * Rotina de Tabela de Saída
+            * Descrição: Geração de Tabela de Saída
+            * Parâmetros: resultadoEmJS
+            * Retorno: none
             */
 
-            function gerarOut(){
+            function gerarOut(resultadoEmJS){
 
-                textoOut = "|| "
-                
+                //cria linhas
+
                 for (let index = 0; index < resultadoEmJS.value.length; index++) {
-                    textoOut = textoOut + "Paridade de Compra " + (index + 1) + ": " + 
-                    resultadoEmJS.value[index].paridadeCompra + " - Paridade de Venda " + (index + 1) + ": " + 
-                    resultadoEmJS.value[index].paridadeVenda + " - Cotação de Compra " + (index + 1) + ": " +
-                    resultadoEmJS.value[index].cotacaoCompra + " - Cotação de Venda " + (index + 1) + ": " +
-                    resultadoEmJS.value[index].cotacaoVenda + " - Data e Hora da Cotação " + (index + 1) + ": " +
-                    resultadoEmJS.value[index].dataHoraCotacao + " - Tipo de Boletim " + (index + 1) + ": " +
-                    resultadoEmJS.value[index].tipoBoletim + " || "
+                   let moedasTr = document.createElement("tr")
+
+                   moedasTr.classList.add("clTrMoedasHead")
+                   moedasTr.appendChild(montaTd(resultadoEmJS.value[index].paridadeCompra, "clThPariedadeComp"))
+                   moedasTr.appendChild(montaTd(resultadoEmJS.value[index].paridadeVenda, "clThPariedadeVend"))
+                   moedasTr.appendChild(montaTd(resultadoEmJS.value[index].cotacaoCompra, "clThCotaçãoComp"))
+                   moedasTr.appendChild(montaTd(resultadoEmJS.value[index].cotacaoVenda, "clThCotaçãoVend"))
+                   moedasTr.appendChild(montaTd(resultadoEmJS.value[index].dataHoraCotacao, "clThHoraCotação"))
+                   moedasTr.appendChild(montaTd(resultadoEmJS.value[index].tipoBoletim, "clThTipoBoletim"))
+
+                   moedaTable.appendChild(moedasTr)
                 }
-                return textoOut
+                
+            }
+
+            //Cria uma coluna
+
+            function montaTd(dado, classe) {
+                let moedaTd = document.createElement("td")
+                moedaTd.textContent = dado
+                moedaTd.classList.add(classe)
+                    
+                return moedaTd
             }
         </script>
     </body>

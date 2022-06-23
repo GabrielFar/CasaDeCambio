@@ -191,7 +191,7 @@
                 moeda = String(document.querySelector("#idMoedas").value)
                 data = document.querySelector("#idData").value
 
-                var xhr = new XMLHttpRequest(); 
+                let xhr = new XMLHttpRequest(); 
 
                 xhr.open("GET", "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda='"+moeda+"'&@dataCotacao='"+data+"'&$top=100&$format=json&$select=paridadeCompra,paridadeVenda,cotacaoCompra,cotacaoVenda,dataHoraCotacao,tipoBoletim")
 
