@@ -193,6 +193,7 @@
                         <table id="idTable">
                             <thead id="idTableHead">
                                 <tr class="clTrMoedasHead">
+                                    <th class="clMoeda">Moeda</th>
                                     <th class="clThPariedadeComp">Pariedade de Compra</th>
                                     <th class="clThPariedadeVend">Pariedade de Venda</th>
                                     <th class="clThCotaçãoComp">Cotação de Compra</th>
@@ -264,6 +265,7 @@
                    let moedasTr = document.createElement("tr")
 
                    moedasTr.classList.add("clTrMoedasHead")
+                   moedasTr.appendChild(montaTd(moeda, "clMoeda"))
                    moedasTr.appendChild(montaTd(resultadoEmJS.value[index].paridadeCompra, "clThPariedadeComp"))
                    moedasTr.appendChild(montaTd(resultadoEmJS.value[index].paridadeVenda, "clThPariedadeVend"))
                    moedasTr.appendChild(montaTd(resultadoEmJS.value[index].cotacaoCompra, "clThCotaçãoComp"))
